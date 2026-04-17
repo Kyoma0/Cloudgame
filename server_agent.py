@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sys
 import time
 import json
@@ -30,13 +30,13 @@ GAME_PROCESS_NAME = "Sunshine.exe"
 
 
 def retry_request(func, max_retries=MAX_RETRIES, base_delay=RETRY_BASE_DELAY):
-    """Executa função com retry exponencial."""
+    """Executa funÃ§Ã£o com retry exponencial."""
     for attempt in range(max_retries):
         try:
             return func()
         except requests.exceptions.RequestException as e:
             if attempt == max_retries - 1:
-                logger.error(f"Falhou após {max_retries} tentativas: {e}")
+                logger.error(f"Falhou apÃ³s {max_retries} tentativas: {e}")
                 raise
             delay = base_delay * (2 ** attempt)
             logger.warning(f"Tentativa {attempt + 1} falhou, retry em {delay}s: {e}")
@@ -44,7 +44,7 @@ def retry_request(func, max_retries=MAX_RETRIES, base_delay=RETRY_BASE_DELAY):
 
 
 def get_tailscale_ip() -> Optional[str]:
-    """Obtém IP do Tailscale."""
+    """ObtÃ©m IP do Tailscale."""
     try:
         if sys.platform == 'win32':
             result = subprocess.run(
@@ -56,7 +56,7 @@ def get_tailscale_ip() -> Optional[str]:
             if result.returncode == 0:
                 return result.stdout.strip()
     except FileNotFoundError:
-        logger.debug("Tailscale não instalado")
+        logger.debug("Tailscale nÃ£o instalado")
     except subprocess.TimeoutExpired:
         logger.warning("Timeout ao buscar IP do Tailscale")
     except Exception as e:
@@ -69,7 +69,7 @@ def scan_library() -> List[Dict[str, Any]]:
     games = []
     
     if sys.platform != 'win32':
-        logger.info("Não é Windows, retornando lista vazia")
+        logger.info("NÃ£o Ã© Windows, retornando lista vazia")
         return games
     
     steam_paths = [
@@ -143,7 +143,7 @@ def scan_library() -> List[Dict[str, Any]]:
 
 
 def get_platform_status() -> Dict[str, bool]:
-    """Verifica se os launchers estão rodando."""
+    """Verifica se os launchers estÃ£o rodando."""
     platforms = {"steam": False, "epic": False, "gog": False}
     process_names = {
         "steam": ["steam.exe", "steamwebhelper.exe"],
@@ -167,7 +167,7 @@ def get_platform_status() -> Dict[str, bool]:
 
 
 def get_battery_status() -> Dict[str, Any]:
-    """Obtém status da bateria."""
+    """ObtÃ©m status da bateria."""
     try:
         battery = psutil.sensors_battery()
         if battery is None:
@@ -183,10 +183,10 @@ def get_battery_status() -> Dict[str, Any]:
 
 
 def get_gpu_stats() -> tuple:
-    """Obtém dados da GPU usando nvidia-smi."""
+    """ObtÃ©m dados da GPU usando nvidia-smi."""
     try:
         if sys.platform != 'win32':
-            raise Exception("Não é Windows")
+            raise Exception("NÃ£o Ã© Windows")
         
         cmd = "nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader,nounits"
         result = subprocess.run(
@@ -207,7 +207,7 @@ def get_gpu_stats() -> tuple:
         raise Exception("nvidia-smi retornou erro")
         
     except FileNotFoundError:
-        logger.warning("nvidia-smi não encontrado")
+        logger.warning("nvidia-smi nÃ£o encontrado")
     except Exception as e:
         logger.debug(f"Erro ao obter stats da GPU: {e}")
     
@@ -216,7 +216,7 @@ def get_gpu_stats() -> tuple:
 
 
 def get_stats() -> Optional[Dict[str, Any]]:
-    """Coleta estatísticas do sistema."""
+    """Coleta estatÃ­sticas do sistema."""
     try:
         gpu_usage, vram_usage, temp = get_gpu_stats()
         battery = get_battery_status()
@@ -255,7 +255,7 @@ def kill_game_process() -> None:
                 if result.returncode == 0:
                     logger.info(f"Processo {target} encerrado")
                 elif result.returncode != 128:
-                    logger.debug(f"Processo {target} não encontrado ou já encerrado")
+                    logger.debug(f"Processo {target} nÃ£o encontrado ou jÃ¡ encerrado")
             else:
                 subprocess.run(["pkill", "-f", target], capture_output=True)
         except Exception as e:
@@ -263,7 +263,7 @@ def kill_game_process() -> None:
 
 
 def send_stats(stats: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Envia estatísticas para a API."""
+    """Envia estatÃ­sticas para a API."""
     def _request():
         response = requests.post(
             f"{API_URL}/host/update",
@@ -303,7 +303,7 @@ def main():
         
         if stats:
             try:
-                logger.debug(f"Stats: GPU={stats['gpu_usage']:.1f}%, Temp={stats['temp']:.0f}°C")
+                logger.debug(f"Stats: GPU={stats['gpu_usage']:.1f}%, Temp={stats['temp']:.0f}Â°C")
                 
                 result = send_stats(stats)
                 
@@ -313,7 +313,7 @@ def main():
                         sync_library()
                     
                     if result.get("kill_session"):
-                        logger.info("Solicitado kill da sessão")
+                        logger.info("Solicitado kill da sessÃ£o")
                         kill_game_process()
                         
             except Exception as e:

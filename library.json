@@ -1,0 +1,30 @@
+[
+  {
+    "id": "steam_1222140",
+    "name": "Detroit: Become Human",
+    "platform": "Steam",
+    "path": "steam://run/1222140",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1222140/header.jpg"
+  },
+  {
+    "id": "steam_228980",
+    "name": "Steamworks Common Redistributables",
+    "platform": "Steam",
+    "path": "steam://run/228980",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/228980/header.jpg"
+  },
+  {
+    "id": "steam_413150",
+    "name": "Stardew Valley",
+    "platform": "Steam",
+    "path": "steam://run/413150",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg"
+  },
+  {
+    "id": "steam_424840",
+    "name": "Little Nightmares",
+    "platform": "Steam",
+    "path": "steam://run/424840",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/424840/header.jpg"
+  }
+]

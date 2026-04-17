@@ -1,12 +1,5 @@
 [
   {
-    "id": "steam_1222140",
-    "name": "Detroit: Become Human",
-    "platform": "Steam",
-    "path": "steam://run/1222140",
-    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1222140/header.jpg"
-  },
-  {
     "id": "steam_228980",
     "name": "Steamworks Common Redistributables",
     "platform": "Steam",
@@ -14,17 +7,101 @@
     "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/228980/header.jpg"
   },
   {
-    "id": "steam_413150",
-    "name": "Stardew Valley",
+    "id": "steam_365670",
+    "name": "Blender",
     "platform": "Steam",
-    "path": "steam://run/413150",
-    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg"
+    "path": "steam://run/365670",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/365670/header.jpg"
   },
   {
-    "id": "steam_424840",
-    "name": "Little Nightmares",
+    "id": "steam_730",
+    "name": "Counter-Strike 2",
     "platform": "Steam",
-    "path": "steam://run/424840",
-    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/424840/header.jpg"
+    "path": "steam://run/730",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg"
+  },
+  {
+    "id": "steam_252490",
+    "name": "Rust",
+    "platform": "Steam",
+    "path": "steam://run/252490",
+    "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/header.jpg"
+  },
+  {
+    "id": "epic_QuixelBridge_5.6",
+    "name": "Quixel Bridge",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/QuixelBridge_5.6?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_9d2d0eb64d5c44529cece33fe2a46482",
+    "name": "Grand Theft Auto V",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/9d2d0eb64d5c44529cece33fe2a46482?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_QuixelBridge_5.7",
+    "name": "Quixel Bridge",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/QuixelBridge_5.7?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_UE_5.7",
+    "name": "Unreal Engine",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/UE_5.7?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_ab277c0995e945d2b2c50c46883627f1",
+    "name": "PC Building Simulator",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/ab277c0995e945d2b2c50c46883627f1?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_FabPlugin_5.7",
+    "name": "Fab UE Plugin",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/FabPlugin_5.7?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_8769e24080ea413b8ebca3f1b8c50951",
+    "name": "Grand Theft Auto V Enhanced",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/8769e24080ea413b8ebca3f1b8c50951?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_QuixelBridge_5.7",
+    "name": "Quixel Bridge",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/QuixelBridge_5.7?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_UE_5.7",
+    "name": "Unreal Engine",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/UE_5.7?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_FabPlugin_5.7",
+    "name": "Fab UE Plugin",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/FabPlugin_5.7?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
+  },
+  {
+    "id": "epic_bcbc03d8812a44c18f41cf7d5f849265",
+    "name": "Cities Skylines",
+    "platform": "Epic",
+    "path": "com.epicgames.launcher://apps/bcbc03d8812a44c18f41cf7d5f849265?action=launch&silent=true",
+    "image": "https://picsum.photos/seed/epic/400/225"
   }
 ]

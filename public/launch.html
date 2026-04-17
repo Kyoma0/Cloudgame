@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cloudgame - Launching Moonlight</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+    }
+    h1 { color: #22d3ee; }
+    p { color: #94a3b8; }
+    .error { color: #ef4444; }
+    .ok { color: #22c55e; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cloudgame</h1>
+    <p id="status">Abrindo Moonlight...</p>
+    <p id="details"></p>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const host = params.get('host') || '192.168.15.119';
+    const app = params.get('app') || 'Desktop';
+    
+    document.getElementById('details').textContent = `Host: ${host} | Jogo: ${app}`;
+    
+    const url = `moonlight://connect?host=${encodeURIComponent(host)}&app=${encodeURIComponent(app)}`;
+    
+    // Tentar abrir moonlight://
+    window.location.href = url;
+    
+    // Se não abrir em 2 segundos, mostrar instruções
+    setTimeout(() => {
+      document.getElementById('status').innerHTML = '<span class="error">Moonlight não abriu automaticamente</span>';
+      document.getElementById('details').innerHTML = `
+        <p>Verifique se o Moonlight está instalado.</p>
+        <p><a href="${url}" style="color: #22d3ee;">Clique aqui para abrir</a></p>
+      `;
+    }, 2000);
+  </script>
+</body>
+</html>

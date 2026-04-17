@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "cloudgame",
   "productName": "Cloudgame",
   "version": "1.0.0",
@@ -17,7 +17,11 @@
     "dist": "npm run build && npm run build:electron && electron-builder",
     "dist:win": "npm run build && npm run build:electron && electron-builder --win",
     "setup:moonlight-sunshine": "node scripts/setup-moonlight-sunshine.js",
-    "setup:cloudflared": "node scripts/setup-cloudflared.js"
+    "setup:cloudflared": "node scripts/setup-cloudflared.js",
+    "server": "node server.js",
+    "agent": "node server_agent.js",
+    "tunnel": "cloudflared tunnel --url http://localhost:5174",
+    "start": "concurrently --kill-others-on-fail --names BACKEND,AGENT,FRONTEND,TUNNEL \"npm run server\" \"npm run agent\" \"npm run dev\" \"npm run tunnel\""
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -45,6 +49,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^9.0.0",
     "electron": "^41.2.1",
     "electron-builder": "^26.8.1",
     "electron-rebuild": "^3.2.9",
@@ -56,32 +61,11 @@
   "build": {
     "appId": "com.cloudgame.client",
     "productName": "Cloudgame",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "dist-electron/**/*",
-      "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "resources",
-        "to": "resources",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
+    "directories": { "output": "release" },
+    "files": ["dist/**/*", "dist-electron/**/*", "package.json"],
+    "extraResources": [{ "from": "resources", "to": "resources", "filter": ["**/*"] }],
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
       "icon": "resources/icon.ico"
     },
     "nsis": {

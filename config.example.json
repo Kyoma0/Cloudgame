@@ -1,0 +1,14 @@
+{
+  "host": {
+    "apiUrl": "http://localhost:3000/api",
+    "tailscaleIp": ""
+  },
+  "user": {
+    "quality": "1080p",
+    "fps": 60,
+    "bitrate": 50
+  },
+  "auth": {
+    "tailscaleAuthKey": ""
+  }
+}

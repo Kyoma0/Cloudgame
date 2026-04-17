@@ -1,79 +1,101 @@
 ﻿{
-  "name": "cloudgame",
-  "productName": "Cloudgame",
-  "version": "1.0.0",
-  "description": "Cloud Gaming Client",
-  "main": "dist-electron/main/index.js",
-  "author": "Cloudgame",
-  "license": "MIT",
-  "scripts": {
-    "dev": "node scripts/dev-with-moonlight.js",
-    "build": "tsc -p tsconfig.electron.json && vite build",
-    "build:electron": "tsc -p tsconfig.electron.json",
-    "electron:dev": "npm run build:electron && electron .",
-    "preview": "vite preview",
-    "clean": "rm -rf dist dist-electron",
-    "lint": "tsc --noEmit",
-    "dist": "npm run build && npm run build:electron && electron-builder",
-    "dist:win": "npm run build && npm run build:electron && electron-builder --win",
-    "setup:moonlight-sunshine": "node scripts/setup-moonlight-sunshine.js",
-    "setup:cloudflared": "node scripts/setup-cloudflared.js",
-    "server": "node server.js",
-    "agent": "node server_agent.js",
-    "tunnel": "cloudflared tunnel --url http://localhost:5174",
-    "start": "concurrently --kill-others-on-fail --names BACKEND,AGENT,FRONTEND,TUNNEL \"npm run server\" \"npm run agent\" \"npm run dev\" \"npm run tunnel\""
-  },
-  "dependencies": {
-    "@google/genai": "^1.29.0",
-    "@tailwindcss/vite": "^4.1.14",
-    "@vitejs/plugin-react": "^5.0.4",
-    "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.9.0",
-    "clsx": "^2.1.1",
-    "cors": "^2.8.6",
-    "dotenv": "^17.2.3",
-    "electron-log": "^5.3.0",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.3",
-    "lucide-react": "^0.546.0",
-    "motion": "^12.38.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "sunshine": "^0.0.1",
-    "tailwind-merge": "^3.5.0",
-    "vite": "^6.2.0",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.14.0",
-    "autoprefixer": "^10.4.21",
-    "concurrently": "^9.0.0",
-    "electron": "^41.2.1",
-    "electron-builder": "^26.8.1",
-    "electron-rebuild": "^3.2.9",
-    "tailwindcss": "^4.1.14",
-    "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  },
-  "build": {
-    "appId": "com.cloudgame.client",
-    "productName": "Cloudgame",
-    "directories": { "output": "release" },
-    "files": ["dist/**/*", "dist-electron/**/*", "package.json"],
-    "extraResources": [{ "from": "resources", "to": "resources", "filter": ["**/*"] }],
-    "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
-      "icon": "resources/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
-    }
-  }
+    "name":  "cloudgame",
+    "productName":  "Cloudgame",
+    "version":  "1.0.0",
+    "description":  "Cloud Gaming Client",
+    "main":  "dist-electron/main/index.js",
+    "author":  "Cloudgame",
+    "license":  "MIT",
+    "scripts":  {
+                    "dev":  "node scripts/dev-with-moonlight.js",
+                    "build":  "tsc -p tsconfig.electron.json \u0026\u0026 vite build",
+                    "build:electron":  "tsc -p tsconfig.electron.json",
+                    "electron:dev":  "npm run build:electron \u0026\u0026 electron .",
+                    "preview":  "vite preview",
+                    "clean":  "rm -rf dist dist-electron",
+                    "lint":  "tsc --noEmit",
+                    "dist":  "npm run build \u0026\u0026 npm run build:electron \u0026\u0026 electron-builder",
+                    "dist:win":  "npm run build \u0026\u0026 npm run build:electron \u0026\u0026 electron-builder --win",
+                    "setup:moonlight-sunshine":  "node scripts/setup-moonlight-sunshine.js",
+                    "setup:cloudflared":  "node scripts/setup-cloudflared.js",
+                    "server":  "node server.js",
+                    "agent":  "node server_agent.js",
+                    "tunnel":  "cloudflared tunnel --url http://localhost:5173",
+                    "start":  "concurrently --kill-others-on-fail --names BACKEND,AGENT,FRONTEND,TUNNEL,SUNSHINE \"npm run server\" \"npm run agent\" \"npm run dev\" \"npm run tunnel\" \"npm run tunnel-sunshine\"",
+                    "tunnel-sunshine":  "cloudflared tunnel --url https://localhost:47990 --no-tls-verify"
+                },
+    "dependencies":  {
+                         "@google/genai":  "^1.29.0",
+                         "@tailwindcss/vite":  "^4.1.14",
+                         "@vitejs/plugin-react":  "^5.0.4",
+                         "bcryptjs":  "^3.0.3",
+                         "better-sqlite3":  "^12.9.0",
+                         "clsx":  "^2.1.1",
+                         "cors":  "^2.8.6",
+                         "dotenv":  "^17.2.3",
+                         "electron-log":  "^5.3.0",
+                         "express":  "^4.21.2",
+                         "jsonwebtoken":  "^9.0.3",
+                         "lucide-react":  "^0.546.0",
+                         "motion":  "^12.38.0",
+                         "react":  "^19.0.0",
+                         "react-dom":  "^19.0.0",
+                         "sunshine":  "^0.0.1",
+                         "tailwind-merge":  "^3.5.0",
+                         "vite":  "^6.2.0",
+                         "zod":  "^4.3.6"
+                     },
+    "devDependencies":  {
+                            "@types/better-sqlite3":  "^7.6.13",
+                            "@types/express":  "^4.17.21",
+                            "@types/node":  "^22.14.0",
+                            "autoprefixer":  "^10.4.21",
+                            "concurrently":  "^9.0.0",
+                            "electron":  "^41.2.1",
+                            "electron-builder":  "^26.8.1",
+                            "electron-rebuild":  "^3.2.9",
+                            "tailwindcss":  "^4.1.14",
+                            "tsx":  "^4.21.0",
+                            "typescript":  "~5.8.2",
+                            "vite":  "^6.2.0"
+                        },
+    "build":  {
+                  "appId":  "com.cloudgame.client",
+                  "productName":  "Cloudgame",
+                  "directories":  {
+                                      "output":  "release"
+                                  },
+                  "files":  [
+                                "dist/**/*",
+                                "dist-electron/**/*",
+                                "package.json"
+                            ],
+                  "extraResources":  [
+                                         {
+                                             "from":  "resources",
+                                             "to":  "resources",
+                                             "filter":  [
+                                                            "**/*"
+                                                        ]
+                                         }
+                                     ],
+                  "win":  {
+                              "target":  [
+                                             {
+                                                 "target":  "nsis",
+                                                 "arch":  [
+                                                              "x64"
+                                                          ]
+                                             }
+                                         ],
+                              "icon":  "resources/icon.ico"
+                          },
+                  "nsis":  {
+                               "oneClick":  false,
+                               "perMachine":  true,
+                               "allowToChangeInstallationDirectory":  true,
+                               "createDesktopShortcut":  true,
+                               "createStartMenuShortcut":  true
+                           }
+              }
 }

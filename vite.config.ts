@@ -371,8 +371,12 @@ const apiPlugin = () => {
           const settings = db.prepare('SELECT * FROM user_settings WHERE user_id = ?').get(user.id) as any;
           const host = db.prepare('SELECT * FROM host_status WHERE id = 1').get() as any;
           const bitrate = settings?.bitrate || 50;
-          const ip = host?.tailscale_ip || '192.168.15.119';
+          const ip = typeof host?.tailscale_ip === 'string' ? host.tailscale_ip.trim() : '';
           const appName = 'Desktop';
+
+          if (!ip || ip === '0.0.0.0' || ip === 'localhost' || ip === '127.0.0.1') {
+            return sendJson({ message: 'Host sem IP Tailscale válido no momento' }, 503);
+          }
 
           addLog('SESSION', `Sessão iniciada por ${user.username} via Moonlight (${bitrate}Mbps)`);
           return sendJson({ 

@@ -2,6 +2,8 @@ node_modules/
 build/
 dist/
 coverage/
+resources/moonlight-streamer.exe
+resources/streamer.exe
 .DS_Store
 *.log
 .env*

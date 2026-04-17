@@ -109,6 +109,175 @@ const CodeBlock = ({ children, label }: any) => (
   </div>
 );
 
+// --- Electron Settings Component ---
+const ElectronSettings = () => {
+  const [tailscaleStatus, setTailscaleStatus] = useState<{ installed: boolean; connected: boolean; ip: string | null }>({ installed: false, connected: false, ip: null });
+  const [moonlightInstalled, setMoonlightInstalled] = useState<boolean>(false);
+  const [moonlightWebStatus, setMoonlightWebStatus] = useState<{ installed: boolean; running: boolean }>({ installed: false, running: false });
+  const [loading, setLoading] = useState(false);
+  const [authKey, setAuthKey] = useState('');
+  const [hostIP, setHostIP] = useState('');
+
+  useEffect(() => {
+    checkStatus();
+  }, []);
+
+  const checkStatus = async () => {
+    if (!window.cloudgame) return;
+    try {
+      const ts = await window.cloudgame.checkTailscale();
+      setTailscaleStatus(ts);
+      const ml = await window.cloudgame.checkMoonlight();
+      setMoonlightInstalled(ml);
+      const mw = await window.cloudgame.checkMoonlightWeb();
+      setMoonlightWebStatus(mw);
+      const config = await window.cloudgame.getConfig();
+      if (config?.auth?.tailscaleAuthKey) setAuthKey(config.auth.tailscaleAuthKey);
+      if (config?.host?.tailscaleIp) setHostIP(config.host.tailscaleIp);
+    } catch (e) { console.error(e); }
+  };
+
+  const installTailscale = async () => {
+    if (!window.cloudgame || !authKey) return;
+    setLoading(true);
+    try {
+      const success = await window.cloudgame.installTailscale(authKey);
+      if (success) {
+        await window.cloudgame.saveConfig({ ...await window.cloudgame.getConfig(), auth: { tailscaleAuthKey: authKey } });
+        await checkStatus();
+      }
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  };
+
+  const startMoonlightWeb = async () => {
+    if (!window.cloudgame) return;
+    setLoading(true);
+    try {
+      await window.cloudgame.startMoonlightWeb(8080);
+      await checkStatus();
+      window.cloudgame.showMessage({ type: 'info', title: 'Sucesso', message: 'Moonlight Web Server iniciado!' });
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  };
+
+  const stopMoonlightWeb = async () => {
+    if (!window.cloudgame) return;
+    try {
+      await window.cloudgame.stopMoonlightWeb();
+      await checkStatus();
+    } catch (e) { console.error(e); }
+  };
+
+  const openMoonlightWeb = () => {
+    if (window.cloudgame) {
+      window.cloudgame.openExternal('http://localhost:8080');
+    } else {
+      window.open('http://localhost:8080', '_blank');
+    }
+  };
+
+  const saveHostIP = async () => {
+    if (!window.cloudgame) return;
+    const config = await window.cloudgame.getConfig() || {};
+    await window.cloudgame.saveConfig({ ...config, host: { ...config.host, tailscaleIp: hostIP, apiUrl: 'http://localhost:3000/api' } });
+    window.cloudgame.showMessage({ type: 'info', title: 'Salvo', message: 'IP do host salvo com sucesso!' });
+  };
+
+  return (
+    <div className="mt-6 space-y-4 p-4 bg-white/5 border border-white/10 rounded-lg">
+      <h3 className="text-lg font-display font-black uppercase text-accent">Configuração Cloudgame</h3>
+      
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold text-text-dim uppercase">Tailscale</p>
+        <div className="flex items-center gap-2">
+          <div className={cn("w-3 h-3 rounded-full", tailscaleStatus.connected ? "bg-green-500" : "bg-red-500")} />
+          <span className="text-sm">{tailscaleStatus.connected ? `Conectado: ${tailscaleStatus.ip}` : 'Desconectado'}</span>
+        </div>
+        {!tailscaleStatus.installed && (
+          <div className="flex gap-2">
+            <input 
+              type="password" 
+              value={authKey} 
+              onChange={(e) => setAuthKey(e.target.value)}
+              placeholder="Auth Key Tailscale"
+              className="flex-1 bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
+            />
+            <button 
+              onClick={installTailscale} 
+              disabled={loading || !authKey}
+              className="px-4 py-2 bg-accent text-bg font-bold uppercase text-xs rounded disabled:opacity-50"
+            >
+              Instalar
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold text-text-dim uppercase">Moonlight Web (Navegador)</p>
+        <div className="flex items-center gap-2">
+          <div className={cn("w-3 h-3 rounded-full", moonlightWebStatus.running ? "bg-green-500" : "bg-red-500")} />
+          <span className="text-sm">{moonlightWebStatus.running ? 'Executando na porta 8080' : 'Parado'}</span>
+        </div>
+        <div className="flex gap-2">
+          {!moonlightWebStatus.running ? (
+            <button 
+              onClick={startMoonlightWeb} 
+              disabled={loading || !moonlightWebStatus.installed}
+              className="px-4 py-2 bg-accent text-bg font-bold uppercase text-xs rounded disabled:opacity-50"
+            >
+              Iniciar Servidor
+            </button>
+          ) : (
+            <button 
+              onClick={stopMoonlightWeb} 
+              className="px-4 py-2 bg-danger text-white font-bold uppercase text-xs rounded"
+            >
+              Parar
+            </button>
+          )}
+          {moonlightWebStatus.running && (
+            <button 
+              onClick={openMoonlightWeb}
+              className="px-4 py-2 bg-green-600 text-white font-bold uppercase text-xs rounded"
+            >
+              Abrir no Navegador
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold text-text-dim uppercase">Moonlight Desktop</p>
+        <div className="flex items-center gap-2">
+          <div className={cn("w-3 h-3 rounded-full", moonlightInstalled ? "bg-green-500" : "bg-red-500")} />
+          <span className="text-sm">{moonlightInstalled ? 'Instalado' : 'Não encontrado'}</span>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold text-text-dim uppercase">Host IP (Tailscale)</p>
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            value={hostIP} 
+            onChange={(e) => setHostIP(e.target.value)}
+            placeholder="100.x.x.x"
+            className="flex-1 bg-white/10 border border-white/20 rounded px-3 py-2 text-sm font-mono"
+          />
+          <button 
+            onClick={saveHostIP}
+            className="px-4 py-2 bg-accent text-bg font-bold uppercase text-xs rounded"
+          >
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- Login Page ---
 const Login = ({ onLogin }: { onLogin: (data: any) => void }) => {
   const [isRegister, setIsRegister] = useState(false);
@@ -542,16 +711,47 @@ const PlayerLauncher = ({ token, onLogout }: any) => {
   };
 
   const launchGame = async () => {
+    const game = library[activeTile];
+    const gameName = game?.name || 'Desktop';
+    // Evitar usar 0.0.0.0 como host IP
+    const rawHostIP = status?.tailscaleIp;
+    const hostIP = (rawHostIP && rawHostIP !== '0.0.0.0') ? rawHostIP : '192.168.15.119';
+
+    if (window.cloudgame) {
+      try {
+        const config = await window.cloudgame.getConfig();
+        const ip = config?.host?.tailscaleIp || hostIP;
+        await window.cloudgame.launchGame(ip, 0, gameName);
+        playSound('woosh');
+        return;
+      } catch (e) { console.error('Electron launch error:', e); }
+    }
+    
+    // Preferir streaming pelo navegador (Moonlight Web) primeiro
     try {
-      const res = await fetch('/api/launch', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (data.success && data.moonlightUrl) {
-        window.location.href = data.moonlightUrl;
+      const webUrl = `http://localhost:8080/?host=${encodeURIComponent(hostIP)}&app=${encodeURIComponent(gameName)}`;
+      // Tenta iniciar o Moonlight Web se ainda não estiver rodando
+      if ((window as any).cloudgame?.startMoonlightWeb) {
+        try { await (window as any).cloudgame.startMoonlightWeb(8080); } catch {}
       }
-    } catch (e) {}
+      // Abre o streaming no navegador
+      window.open(webUrl, '_blank');
+      playSound('woosh');
+      return;
+    } catch (err) {
+      // Fall back: tentar abrir Desktop Moonlight como último recurso
+      try {
+        const response = await fetch(`http://localhost:47999/?host=${encodeURIComponent(hostIP)}&app=${encodeURIComponent(gameName)}`);
+        if (response.ok) {
+          playSound('woosh');
+          return;
+        }
+      } catch (_) {}
+      // Se ainda não der, instruções manuais
+      alert(`Moonlight Launcher não está rodando.\n\nHost: ${hostIP}\nJogo: ${gameName}\n\nExecute: resources\\iniciar-cloudgame.ps1`);
+    }
+    
+    playSound('woosh');
   };
 
   useEffect(() => {
@@ -1402,6 +1602,9 @@ const PlayerLauncher = ({ token, onLogout }: any) => {
                                 <p className="text-[10px] font-bold text-text-dim uppercase mb-1">Tailscale IP</p>
                                 <p className="text-lg font-mono text-white">{status.tailscaleIp || '0.0.0.0'}</p>
                               </div>
+                              {window.cloudgame && (
+                                <ElectronSettings />
+                              )}
                             </>
                           ) : (
                             <div className="space-y-4">

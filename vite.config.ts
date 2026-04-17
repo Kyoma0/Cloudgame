@@ -370,37 +370,25 @@ const apiPlugin = () => {
 
           const settings = db.prepare('SELECT * FROM user_settings WHERE user_id = ?').get(user.id) as any;
           const host = db.prepare('SELECT * FROM host_status WHERE id = 1').get() as any;
-
-          // Execute Python launch script as requested
-          const pythonScript = `
-import subprocess
-import sys
-
-def launch_moonlight(ip, bitrate):
-    print(f"Launching Moonlight to {ip} at {bitrate}Mbps...")
-    # In a real scenario, this would be:
-    # subprocess.Popen(["moonlight", "stream", ip, "--bitrate", str(bitrate)])
-    return True
-
-if __name__ == "__main__":
-    launch_moonlight(sys.argv[1], sys.argv[2])
-`;
-          fs.writeFileSync('launch.py', pythonScript);
-          
           const bitrate = settings?.bitrate || 50;
-          const ip = host?.tailscale_ip || '0.0.0.0';
-
-          exec(`python3 launch.py ${ip} ${bitrate}`, (err, stdout) => {
-            if (err) console.error("Python Launch Error:", err);
-            else console.log("Python Launch Output:", stdout);
-          });
+          const ip = host?.tailscale_ip || '192.168.15.119';
+          const appName = 'Desktop';
 
           addLog('SESSION', `Sessão iniciada por ${user.username} via Moonlight (${bitrate}Mbps)`);
           return sendJson({ 
             success: true, 
-            message: 'Comando de inicialização enviado',
-            moonlightUrl: `moonlight://stream?address=${ip}&bitrate=${bitrate * 1000}`
+            moonlightUrl: `moonlight://connect?host=${ip}&app=${encodeURIComponent(appName)}`,
+            host: ip,
+            app: appName
           });
+        }
+        
+        // Redirect /launch to the launcher page
+        if (pathname === '/launch') {
+          res.statusCode = 302;
+          res.setHeader('Location', '/launch.html');
+          res.end();
+          return;
         }
 
         if (pathname === '/api/queue/join' && req.method === 'POST') {

@@ -7,7 +7,7 @@
   "author": "Cloudgame",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev-with-moonlight.js",
     "build": "tsc -p tsconfig.electron.json && vite build",
     "build:electron": "tsc -p tsconfig.electron.json",
     "electron:dev": "npm run build:electron && electron .",
@@ -15,7 +15,9 @@
     "clean": "rm -rf dist dist-electron",
     "lint": "tsc --noEmit",
     "dist": "npm run build && npm run build:electron && electron-builder",
-    "dist:win": "npm run build && npm run build:electron && electron-builder --win"
+    "dist:win": "npm run build && npm run build:electron && electron-builder --win",
+    "setup:moonlight-sunshine": "node scripts/setup-moonlight-sunshine.js",
+    "setup:cloudflared": "node scripts/setup-cloudflared.js"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -33,6 +35,7 @@
     "motion": "^12.38.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sunshine": "^0.0.1",
     "tailwind-merge": "^3.5.0",
     "vite": "^6.2.0",
     "zod": "^4.3.6"

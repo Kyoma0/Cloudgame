@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { loadSunshine } from './sunshine-loader';
 import { 
   Monitor, 
   Cpu, 
@@ -123,27 +124,27 @@ const ElectronSettings = () => {
   }, []);
 
   const checkStatus = async () => {
-    if (!window.cloudgame) return;
+      if (!(window as any).cloudgame) return;
     try {
-      const ts = await window.cloudgame.checkTailscale();
+      const ts = await (window as any).cloudgame.checkTailscale();
       setTailscaleStatus(ts);
-      const ml = await window.cloudgame.checkMoonlight();
+      const ml = await (window as any).cloudgame.checkMoonlight();
       setMoonlightInstalled(ml);
-      const mw = await window.cloudgame.checkMoonlightWeb();
+      const mw = await (window as any).cloudgame.checkMoonlightWeb();
       setMoonlightWebStatus(mw);
-      const config = await window.cloudgame.getConfig();
+      const config = await (window as any).cloudgame.getConfig();
       if (config?.auth?.tailscaleAuthKey) setAuthKey(config.auth.tailscaleAuthKey);
       if (config?.host?.tailscaleIp) setHostIP(config.host.tailscaleIp);
     } catch (e) { console.error(e); }
   };
 
   const installTailscale = async () => {
-    if (!window.cloudgame || !authKey) return;
+    if (!((window as any).cloudgame) || !authKey) return;
     setLoading(true);
     try {
-      const success = await window.cloudgame.installTailscale(authKey);
+      const success = await ((window as any).cloudgame).installTailscale(authKey);
       if (success) {
-        await window.cloudgame.saveConfig({ ...await window.cloudgame.getConfig(), auth: { tailscaleAuthKey: authKey } });
+        await ((window as any).cloudgame).saveConfig({ ...await ((window as any).cloudgame).getConfig(), auth: { tailscaleAuthKey: authKey } });
         await checkStatus();
       }
     } catch (e) { console.error(e); }
@@ -151,37 +152,37 @@ const ElectronSettings = () => {
   };
 
   const startMoonlightWeb = async () => {
-    if (!window.cloudgame) return;
+    if (!((window as any).cloudgame)) return;
     setLoading(true);
     try {
-      await window.cloudgame.startMoonlightWeb(8080);
+      await ((window as any).cloudgame).startMoonlightWeb(8080);
       await checkStatus();
-      window.cloudgame.showMessage({ type: 'info', title: 'Sucesso', message: 'Moonlight Web Server iniciado!' });
+      ((window as any).cloudgame).showMessage({ type: 'info', title: 'Sucesso', message: 'Moonlight Web Server iniciado!' });
     } catch (e) { console.error(e); }
     setLoading(false);
   };
 
   const stopMoonlightWeb = async () => {
-    if (!window.cloudgame) return;
+    if (!((window as any).cloudgame)) return;
     try {
-      await window.cloudgame.stopMoonlightWeb();
+      await ((window as any).cloudgame).stopMoonlightWeb();
       await checkStatus();
     } catch (e) { console.error(e); }
   };
 
   const openMoonlightWeb = () => {
-    if (window.cloudgame) {
-      window.cloudgame.openExternal('http://localhost:8080');
+    if ((window as any).cloudgame) {
+      ((window as any).cloudgame).openExternal('http://localhost:8080');
     } else {
       window.open('http://localhost:8080', '_blank');
     }
   };
 
   const saveHostIP = async () => {
-    if (!window.cloudgame) return;
-    const config = await window.cloudgame.getConfig() || {};
-    await window.cloudgame.saveConfig({ ...config, host: { ...config.host, tailscaleIp: hostIP, apiUrl: 'http://localhost:3000/api' } });
-    window.cloudgame.showMessage({ type: 'info', title: 'Salvo', message: 'IP do host salvo com sucesso!' });
+    if (!((window as any).cloudgame)) return;
+    const config = await ((window as any).cloudgame).getConfig() || {};
+    await ((window as any).cloudgame).saveConfig({ ...config, host: { ...config.host, tailscaleIp: hostIP, apiUrl: 'http://localhost:3000/api' } });
+    ((window as any).cloudgame).showMessage({ type: 'info', title: 'Salvo', message: 'IP do host salvo com sucesso!' });
   };
 
   return (
@@ -717,11 +718,11 @@ const PlayerLauncher = ({ token, onLogout }: any) => {
     const rawHostIP = status?.tailscaleIp;
     const hostIP = (rawHostIP && rawHostIP !== '0.0.0.0') ? rawHostIP : '192.168.15.119';
 
-    if (window.cloudgame) {
+    if ((window as any).cloudgame) {
       try {
-        const config = await window.cloudgame.getConfig();
+        const config = await ((window as any).cloudgame).getConfig();
         const ip = config?.host?.tailscaleIp || hostIP;
-        await window.cloudgame.launchGame(ip, 0, gameName);
+        await ((window as any).cloudgame).launchGame(ip, 0, gameName);
         playSound('woosh');
         return;
       } catch (e) { console.error('Electron launch error:', e); }
@@ -1602,7 +1603,7 @@ const PlayerLauncher = ({ token, onLogout }: any) => {
                                 <p className="text-[10px] font-bold text-text-dim uppercase mb-1">Tailscale IP</p>
                                 <p className="text-lg font-mono text-white">{status.tailscaleIp || '0.0.0.0'}</p>
                               </div>
-                              {window.cloudgame && (
+                              {(window as any).cloudgame && (
                                 <ElectronSettings />
                               )}
                             </>
@@ -1979,6 +1980,14 @@ export default function App() {
     setAuth(null);
     localStorage.removeItem('vcloud_auth');
   };
+
+  // Initialize Sunshine (optional dependency) only; Moonlight auto-start is handled by the dev script
+  useEffect(() => {
+    try {
+      const Sunshine = loadSunshine();
+      if (Sunshine && typeof Sunshine.init === 'function') Sunshine.init();
+    } catch {}
+  }, []);
 
   if (!auth) return <Login onLogin={handleLogin} />;
 

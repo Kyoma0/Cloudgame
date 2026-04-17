@@ -9,3 +9,4 @@ resources/streamer.exe
 .env*
 !.env.example
 .idea
+package-lock.json

@@ -714,43 +714,81 @@ const PlayerLauncher = ({ token, onLogout }: any) => {
   const launchGame = async () => {
     const game = library[activeTile];
     const gameName = game?.name || 'Desktop';
-    // Evitar usar 0.0.0.0 como host IP
-    const rawHostIP = status?.tailscaleIp;
-    const hostIP = (rawHostIP && rawHostIP !== '0.0.0.0') ? rawHostIP : '192.168.15.119';
+    const isUsableHost = (value?: string | null) => {
+      if (!value) return false;
+      const normalized = value.trim().toLowerCase();
+      return normalized !== '' && normalized !== '0.0.0.0' && normalized !== 'localhost' && normalized !== '127.0.0.1';
+    };
+
+    let configHostIP = '';
+    if ((window as any).cloudgame?.getConfig) {
+      try {
+        const config = await ((window as any).cloudgame).getConfig();
+        configHostIP = config?.host?.tailscaleIp || '';
+      } catch (e) {
+        console.error('Electron config error:', e);
+      }
+    }
+
+    let launchData: any = null;
+    try {
+      const res = await fetch('/api/launch', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        launchData = await res.json();
+      }
+    } catch (e) {
+      console.error('Launch API error:', e);
+    }
+
+    const resolvedHostIP =
+      (isUsableHost(launchData?.host) && launchData.host) ||
+      (isUsableHost(configHostIP) && configHostIP) ||
+      (isUsableHost(status?.tailscaleIp) && status.tailscaleIp) ||
+      '';
+
+    if (!resolvedHostIP) {
+      alert('IP do host indisponível no momento. Verifique o Tailscale do host e tente novamente.');
+      return;
+    }
 
     if ((window as any).cloudgame) {
       try {
-        const config = await ((window as any).cloudgame).getConfig();
-        const ip = config?.host?.tailscaleIp || hostIP;
-        await ((window as any).cloudgame).launchGame(ip, 0, gameName);
+        await ((window as any).cloudgame).launchGame(resolvedHostIP, 0, gameName);
         playSound('woosh');
         return;
       } catch (e) { console.error('Electron launch error:', e); }
     }
     
-    // Preferir streaming pelo navegador (Moonlight Web) primeiro
+    if (launchData?.moonlightUrl) {
+      try {
+        window.location.href = launchData.moonlightUrl;
+        playSound('woosh');
+        return;
+      } catch (e) {
+        console.error('Moonlight protocol launch error:', e);
+      }
+    }
+
     try {
-      const webUrl = `http://localhost:8080/?host=${encodeURIComponent(hostIP)}&app=${encodeURIComponent(gameName)}`;
-      // Tenta iniciar o Moonlight Web se ainda não estiver rodando
       if ((window as any).cloudgame?.startMoonlightWeb) {
         try { await (window as any).cloudgame.startMoonlightWeb(8080); } catch {}
       }
-      // Abre o streaming no navegador
-      window.open(webUrl, '_blank');
-      playSound('woosh');
-      return;
-    } catch (err) {
-      // Fall back: tentar abrir Desktop Moonlight como último recurso
+
       try {
-        const response = await fetch(`http://localhost:47999/?host=${encodeURIComponent(hostIP)}&app=${encodeURIComponent(gameName)}`);
+        const response = await fetch(`http://localhost:47999/?host=${encodeURIComponent(resolvedHostIP)}&app=${encodeURIComponent(gameName)}`);
         if (response.ok) {
           playSound('woosh');
           return;
         }
       } catch (_) {}
-      // Se ainda não der, instruções manuais
-      alert(`Moonlight Launcher não está rodando.\n\nHost: ${hostIP}\nJogo: ${gameName}\n\nExecute: resources\\iniciar-cloudgame.ps1`);
+    } catch (err) {
+      console.error('Fallback launch error:', err);
     }
+
+    alert(`Não foi possível iniciar o Moonlight automaticamente.\n\nHost: ${resolvedHostIP}\nJogo: ${gameName}\n\nAbra o Moonlight no cliente e conecte manualmente a este host.`);
     
     playSound('woosh');
   };
@@ -1993,5 +2031,4 @@ export default function App() {
 
   return <PlayerLauncher token={auth.token} onLogout={handleLogout} />;
 }
-
 
